@@ -1,9 +1,2 @@
-#!/usr/bin/env python3
-"""Script to list all databases in MongoDB"""
-from pymongo import MongoClient
-
-if __name__ == "__main__":
-    client = MongoClient('mongodb://127.0.0.1:27017')
-    databases = client.list_database_names()
-    for db in databases:
-        print(db)
+#!/usr/bin/env bash
+echo 'db.adminCommand({ "listDatabases": 1 })' | mongo
