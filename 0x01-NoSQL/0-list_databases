@@ -1,2 +1,2 @@
-#!/usr/bin/env bash
-echo 'db.adminCommand({ "listDatabases": 1 })' | mongo
+// Lists all MongoDB databases.
+show dbs;
