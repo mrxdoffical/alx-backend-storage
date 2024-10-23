@@ -17,6 +17,22 @@ def count_calls(method: Callable) -> Callable:
     return wrapper
 
 
+def call_history(method: Callable) -> Callable:
+    """Decorator to store the history of inputs and outputs of a method."""
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """Wrap the original method to store input/output history."""
+        input_key = method.__qualname__ + ":inputs"
+        output_key = method.__qualname__ + ":outputs"
+
+        self._redis.rpush(input_key, str(args))
+        output = method(self, *args, **kwargs)
+        self._redis.rpush(output_key, str(output))
+
+        return output
+    return wrapper
+
+
 class Cache:
     """Cache class to store data in Redis."""
 
@@ -26,12 +42,13 @@ class Cache:
         self._redis.flushdb()
 
     @count_calls
+    @call_history
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Store the given data in Redis and return the generated key.
 
         Args:
-            data (Union[str, bytes, int, float]): Data to be stored in Redis.
+            data (Union[str, bytes, int, float]
 
         Returns:
             str: The generated key for the stored data.
@@ -44,7 +61,7 @@ class Cache:
         self, key: str, fn: Optional[Callable] = None
     ) -> Union[str, bytes, int, float, None]:
         """
-        Retrieve data from Redis and optionally apply a conversion function.
+        Retrieve data from Redis and optionally apply
 
         Args:
             key (str): The key to retrieve from Redis.
@@ -68,7 +85,7 @@ class Cache:
             key (str): The key to retrieve from Redis.
 
         Returns:
-            Optional[str]
+            Optional[str]: The retrieved string
         """
         return self.get(key, lambda d: d.decode('utf-8'))
 
@@ -80,6 +97,6 @@ class Cache:
             key (str): The key to retrieve from Redis.
 
         Returns:
-            Optional[int]
+            Optional[int]: The retrieved integer
         """
         return self.get(key, int)
