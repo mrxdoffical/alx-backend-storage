@@ -48,8 +48,9 @@ def replay(method: Callable) -> None:
     print(f"{method.__qualname__} was called {len(input_list)} times:")
 
     for inp, out in zip(input_list, output_list):
-        print(f"{method.__qualname__}(*{
-            inp.decode('utf-8')}) -> {out.decode('utf-8')}")
+        inp_decoded = inp.decode("utf-8")
+        out_decoded = out.decode("utf-8")
+        print(f"{method.__qualname__}(*{inp_decoded}) -> {out_decoded}")
 
 
 class Cache:
@@ -87,8 +88,8 @@ class Cache:
             fn (Optional[Callable]): A callable to convert the data.
 
         Returns:
-            Union[str, bytes, int, float, None]:
-            The retrieved data in its original type.
+            Union[str, bytes, int, float, None]: The retrieved data in its
+            original type.
         """
         data = self._redis.get(key)
         if data is None:
@@ -105,8 +106,8 @@ class Cache:
             key (str): The key to retrieve from Redis.
 
         Returns:
-            Optional[str]: The retrieved string,
-            or None if the key does not exist.
+            Optional[str]: The retrieved string, or None if the key does not
+            exist.
         """
         return self.get(key, lambda d: d.decode("utf-8"))
 
@@ -118,7 +119,7 @@ class Cache:
             key (str): The key to retrieve from Redis.
 
         Returns:
-            Optional[int]: The retrieved integer,
-            or None if the key does not exist.
+            Optional[int]: The retrieved integer, or None if the key does not
+            exist.
         """
         return self.get(key, int)
